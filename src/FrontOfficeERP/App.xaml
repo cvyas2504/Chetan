@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:FrontOfficeERP.Converters"
+             x:Class="FrontOfficeERP.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
+
+            <Style TargetType="Entry">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="PlaceholderColor" Value="#aaa" />
+            </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="Padding" Value="12,6" />
+            </Style>
+
+            <Style TargetType="Picker">
+                <Setter Property="FontSize" Value="14" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FrontOfficeERP.Views.LoginHistoryPage"
+             Title="Login History"
+             BackgroundColor="#f0f2f5">
+
+    <Grid RowDefinitions="Auto,*" Padding="24" RowSpacing="16">
+
+        <HorizontalStackLayout Grid.Row="0" Spacing="12">
+            <Button Text="Refresh" x:Name="RefreshButton"
+                    BackgroundColor="#2e7d32" TextColor="White" CornerRadius="6" />
+        </HorizontalStackLayout>
+
+        <Border Grid.Row="1" StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White">
+            <CollectionView x:Name="HistoryList" SelectionMode="None">
+                <CollectionView.Header>
+                    <Grid ColumnDefinitions="60,120,*,*,80,*" Padding="12,8" BackgroundColor="#1a237e">
+                        <Label Grid.Column="0" Text="User ID" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                        <Label Grid.Column="1" Text="Login Time" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                        <Label Grid.Column="2" Text="Logout Time" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                        <Label Grid.Column="3" Text="Machine" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                        <Label Grid.Column="4" Text="Success" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                        <Label Grid.Column="5" Text="Remarks" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                    </Grid>
+                </CollectionView.Header>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="60,120,*,*,80,*" Padding="12,6">
+                            <Label Grid.Column="0" Text="{Binding UserId}" FontSize="12" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{Binding LoginTime, StringFormat='{0:dd-MMM HH:mm}'}" FontSize="12" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="{Binding LogoutTime, StringFormat='{0:dd-MMM HH:mm}'}" FontSize="12" VerticalOptions="Center" />
+                            <Label Grid.Column="3" Text="{Binding MachineName}" FontSize="12" VerticalOptions="Center" />
+                            <Label Grid.Column="4" Text="{Binding IsSuccess}" FontSize="12" VerticalOptions="Center" />
+                            <Label Grid.Column="5" Text="{Binding Remarks}" FontSize="12" VerticalOptions="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Border>
+    </Grid>
+</ContentPage>
