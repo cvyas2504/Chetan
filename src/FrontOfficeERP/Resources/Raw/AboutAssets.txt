@@ -1,0 +1,5 @@
+Any raw assets you want to be deployed with your application can be placed in
+this directory (and child directories). Deployment of the asset to your application
+is automatic. You can access these assets using MauiAsset.
+
+These assets will not be processed by the MAUI asset pipeline.

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:FrontOfficeERP.Views"
+       x:Class="FrontOfficeERP.AppShell"
+       Title="FrontOffice ERP"
+       Shell.FlyoutBehavior="Disabled">
+
+    <!-- Login (no tab/flyout) -->
+    <ShellContent x:Name="LoginShell"
+                  Route="login"
+                  ContentTemplate="{DataTemplate views:LoginPage}"
+                  Shell.TabBarIsVisible="False"
+                  Shell.NavBarIsVisible="False" />
+
+    <!-- Main App with Tab Navigation -->
+    <TabBar Route="main">
+        <ShellContent Route="dashboard"
+                      Title="Dashboard"
+                      ContentTemplate="{DataTemplate views:DashboardPage}" />
+        <ShellContent Route="dutyroster"
+                      Title="Duty Roster"
+                      ContentTemplate="{DataTemplate views:DutyRosterPage}" />
+        <ShellContent Route="employees"
+                      Title="Employees"
+                      ContentTemplate="{DataTemplate views:EmployeeMasterPage}" />
+        <ShellContent Route="dutymaster"
+                      Title="Duty Master"
+                      ContentTemplate="{DataTemplate views:DutyMasterPage}" />
+        <ShellContent Route="excelcompare"
+                      Title="Excel Compare"
+                      ContentTemplate="{DataTemplate views:ExcelComparePage}" />
+        <ShellContent Route="users"
+                      Title="Users"
+                      ContentTemplate="{DataTemplate views:UserMasterPage}" />
+        <ShellContent Route="loginhistory"
+                      Title="Login History"
+                      ContentTemplate="{DataTemplate views:LoginHistoryPage}" />
+    </TabBar>
+
+</Shell>

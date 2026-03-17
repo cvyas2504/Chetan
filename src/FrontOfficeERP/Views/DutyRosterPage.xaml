@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FrontOfficeERP.ViewModels"
+             x:Class="FrontOfficeERP.Views.DutyRosterPage"
+             x:DataType="vm:DutyRosterViewModel"
+             Title="Duty Roster"
+             BackgroundColor="#f0f2f5">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="24" RowSpacing="12">
+
+        <!-- Toolbar Row 1: Period Navigation -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+            <Button Grid.Column="0" Text="Weekly"
+                    Command="{Binding SwitchToWeeklyCommand}"
+                    BackgroundColor="#1a237e" TextColor="White" CornerRadius="6" />
+            <Button Grid.Column="1" Text="Monthly"
+                    Command="{Binding SwitchToMonthlyCommand}"
+                    BackgroundColor="#1565c0" TextColor="White" CornerRadius="6" />
+            <Button Grid.Column="2" Text="&lt; Prev"
+                    Command="{Binding PreviousPeriodCommand}"
+                    BackgroundColor="#455a64" TextColor="White" CornerRadius="6" />
+
+            <Label Grid.Column="3" Text="{Binding ReportTitle}"
+                   FontSize="16" FontAttributes="Bold" TextColor="#1a237e"
+                   VerticalOptions="Center" HorizontalOptions="Center" />
+
+            <Button Grid.Column="4" Text="Next &gt;"
+                    Command="{Binding NextPeriodCommand}"
+                    BackgroundColor="#455a64" TextColor="White" CornerRadius="6" />
+            <Button Grid.Column="5" Text="Load"
+                    Command="{Binding LoadRosterCommand}"
+                    BackgroundColor="#2e7d32" TextColor="White" CornerRadius="6" />
+            <Button Grid.Column="6" Text="+ Add Entry"
+                    Command="{Binding NewRosterEntryCommand}"
+                    BackgroundColor="#e65100" TextColor="White" CornerRadius="6" />
+        </Grid>
+
+        <!-- Toolbar Row 2: Export/Print -->
+        <HorizontalStackLayout Grid.Row="1" Spacing="8">
+            <Button Text="Export Excel"
+                    Command="{Binding ExportToExcelCommand}"
+                    BackgroundColor="#1b5e20" TextColor="White" CornerRadius="6" FontSize="12" />
+            <Button Text="Export PDF"
+                    Command="{Binding ExportToPdfCommand}"
+                    BackgroundColor="#b71c1c" TextColor="White" CornerRadius="6" FontSize="12" />
+            <Button Text="Print"
+                    Command="{Binding PrintRosterCommand}"
+                    BackgroundColor="#4a148c" TextColor="White" CornerRadius="6" FontSize="12" />
+        </HorizontalStackLayout>
+
+        <!-- Content: Roster List + Edit Panel -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="16">
+
+            <!-- Roster List -->
+            <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White">
+                <CollectionView ItemsSource="{Binding RosterEntries}" SelectionMode="None">
+                    <CollectionView.Header>
+                        <Grid ColumnDefinitions="100,*,80,*,80,80,80" Padding="12,8" BackgroundColor="#1a237e">
+                            <Label Grid.Column="0" Text="Date" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                            <Label Grid.Column="1" Text="Employee" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                            <Label Grid.Column="2" Text="Code" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                            <Label Grid.Column="3" Text="Duty" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                            <Label Grid.Column="4" Text="Shift" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                            <Label Grid.Column="5" Text="Status" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                            <Label Grid.Column="6" Text="Actions" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                        </Grid>
+                    </CollectionView.Header>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="x:Object">
+                            <Grid ColumnDefinitions="100,*,80,*,80,80,80" Padding="12,6">
+                                <Label Grid.Column="0" Text="{Binding DutyDate, StringFormat='{0:dd-MMM-yyyy}'}" FontSize="12" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{Binding EmployeeName}" FontSize="12" VerticalOptions="Center" />
+                                <Label Grid.Column="2" Text="{Binding DutyCode}" FontSize="12" VerticalOptions="Center" />
+                                <Label Grid.Column="3" Text="{Binding DutyName}" FontSize="12" VerticalOptions="Center" />
+                                <Label Grid.Column="4" Text="{Binding ShiftType}" FontSize="12" VerticalOptions="Center" />
+                                <Label Grid.Column="5" Text="{Binding Status}" FontSize="12" VerticalOptions="Center" />
+                                <Button Grid.Column="6"
+                                        Text="Delete"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DutyRosterViewModel}}, Path=DeleteRosterEntryCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="#c62828"
+                                        TextColor="White"
+                                        FontSize="10"
+                                        HeightRequest="28"
+                                        CornerRadius="4"
+                                        Padding="8,0" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="40">
+                            <Label Text="No roster entries for selected period."
+                                   FontSize="14" TextColor="#999" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </Border>
+
+            <!-- Add Entry Panel -->
+            <Border Grid.Column="1"
+                    StrokeShape="RoundRectangle 8"
+                    Stroke="#e0e0e0"
+                    BackgroundColor="White"
+                    Padding="20"
+                    WidthRequest="320"
+                    IsVisible="{Binding IsEditing}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Add Roster Entry" FontSize="18" FontAttributes="Bold" TextColor="#1a237e" />
+                    <BoxView HeightRequest="1" Color="#e0e0e0" />
+
+                    <Label Text="Employee" FontSize="12" TextColor="#666" />
+                    <Picker ItemsSource="{Binding Employees}"
+                            SelectedItem="{Binding SelectedEmployee}"
+                            ItemDisplayBinding="{Binding FullName}" />
+
+                    <Label Text="Duty" FontSize="12" TextColor="#666" />
+                    <Picker ItemsSource="{Binding Duties}"
+                            SelectedItem="{Binding SelectedDuty}"
+                            ItemDisplayBinding="{Binding DutyName}" />
+
+                    <Label Text="Date" FontSize="12" TextColor="#666" />
+                    <DatePicker Date="{Binding SelectedDate}" />
+
+                    <Label Text="Remarks" FontSize="12" TextColor="#666" />
+                    <Editor Text="{Binding Remarks}" HeightRequest="60" Placeholder="Optional remarks" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,8,0,0">
+                        <Button Text="Save"
+                                Command="{Binding SaveRosterEntryCommand}"
+                                BackgroundColor="#2e7d32"
+                                TextColor="White"
+                                CornerRadius="6" />
+                        <Button Grid.Column="1"
+                                Text="Cancel"
+                                Command="{Binding CancelEditCommand}"
+                                BackgroundColor="#757575"
+                                TextColor="White"
+                                CornerRadius="6" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <ActivityIndicator Grid.RowSpan="3" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="#1a237e" VerticalOptions="Center" HorizontalOptions="Center" />
+    </Grid>
+</ContentPage>
