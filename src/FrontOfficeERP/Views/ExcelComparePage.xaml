@@ -2,163 +2,272 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:FrontOfficeERP.ViewModels"
+             xmlns:converters="clr-namespace:FrontOfficeERP.Converters"
              x:Class="FrontOfficeERP.Views.ExcelComparePage"
              x:DataType="vm:ExcelCompareViewModel"
              Title="Excel Compare"
              BackgroundColor="#f0f2f5">
 
-    <ScrollView>
-        <VerticalStackLayout Spacing="16" Padding="24">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:ChangeTypeToColorConverter x:Key="ChangeTypeToColor" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-            <!-- File Selection -->
-            <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White" Padding="20">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="File Selection" FontSize="18" FontAttributes="Bold" TextColor="#1a237e" />
-                    <BoxView HeightRequest="1" Color="#e0e0e0" />
+    <Grid RowDefinitions="*,Auto">
 
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                        <Label Text="{Binding MasterFilePath, TargetNullValue='No master file selected'}"
-                               FontSize="12" TextColor="#666" VerticalOptions="Center" LineBreakMode="MiddleTruncation" />
-                        <Button Grid.Column="1" Text="Browse Master File"
-                                Command="{Binding BrowseMasterFileCommand}"
-                                BackgroundColor="#1a237e" TextColor="White" CornerRadius="6" />
-                    </Grid>
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="16" Padding="24">
 
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                        <Label Text="{Binding CompareFilePath, TargetNullValue='No compare file selected'}"
-                               FontSize="12" TextColor="#666" VerticalOptions="Center" LineBreakMode="MiddleTruncation" />
-                        <Button Grid.Column="1" Text="Browse Compare File"
-                                Command="{Binding BrowseCompareFileCommand}"
-                                BackgroundColor="#1565c0" TextColor="White" CornerRadius="6" />
-                    </Grid>
+                <!-- Compare Mode Selector -->
+                <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White" Padding="20">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Compare Mode" FontSize="18" FontAttributes="Bold" TextColor="#1a237e" />
+                        <BoxView HeightRequest="1" Color="#e0e0e0" />
+                        <HorizontalStackLayout Spacing="12">
+                            <Label Text="Mode:" FontSize="13" TextColor="#666" VerticalOptions="Center" />
+                            <Picker ItemsSource="{Binding CompareModes}"
+                                    SelectedItem="{Binding SelectedCompareMode}"
+                                    WidthRequest="200" />
+                        </HorizontalStackLayout>
+                        <Label Text="Column Mapping: Compare by mapped reference columns. Cell-by-Cell: Full workbook diff detecting additions, deletions, and value changes."
+                               FontSize="11" TextColor="#888" />
+                    </VerticalStackLayout>
+                </Border>
 
-                    <Label Text="{Binding StatusMessage}" FontSize="12" TextColor="#2e7d32" />
-                </VerticalStackLayout>
-            </Border>
+                <!-- File Selection -->
+                <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White" Padding="20">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="File Selection" FontSize="18" FontAttributes="Bold" TextColor="#1a237e" />
+                        <BoxView HeightRequest="1" Color="#e0e0e0" />
 
-            <!-- Column Mapping -->
-            <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White" Padding="20">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Column Mapping (Reference Popup)" FontSize="18" FontAttributes="Bold" TextColor="#1a237e" />
-                    <Label Text="Map columns between master and compare files. Set one as Reference Column for matching."
-                           FontSize="12" TextColor="#666" />
-                    <BoxView HeightRequest="1" Color="#e0e0e0" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <Label Text="{Binding MasterFilePath, TargetNullValue='No master file selected'}"
+                                   FontSize="12" TextColor="#666" VerticalOptions="Center" LineBreakMode="MiddleTruncation" />
+                            <Button Grid.Column="1" Text="Browse Master File"
+                                    Command="{Binding BrowseMasterFileCommand}"
+                                    BackgroundColor="#1a237e" TextColor="White" CornerRadius="6" />
+                        </Grid>
 
-                    <Grid ColumnDefinitions="*,*,Auto,Auto" ColumnSpacing="12" RowDefinitions="Auto,Auto">
-                        <VerticalStackLayout Grid.Column="0">
-                            <Label Text="Master Column" FontSize="12" TextColor="#666" />
-                            <Picker ItemsSource="{Binding MasterHeaders}" SelectedItem="{Binding SelectedMasterHeader}" />
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1">
-                            <Label Text="Compare Column" FontSize="12" TextColor="#666" />
-                            <Picker ItemsSource="{Binding CompareHeaders}" SelectedItem="{Binding SelectedCompareHeader}" />
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="2" VerticalOptions="End">
-                            <HorizontalStackLayout Spacing="4">
-                                <CheckBox IsChecked="{Binding IsReferenceColumn}" />
-                                <Label Text="Reference Key" VerticalOptions="Center" FontSize="12" TextColor="#c62828" FontAttributes="Bold" />
-                            </HorizontalStackLayout>
-                        </VerticalStackLayout>
-                        <Button Grid.Column="3" Text="Add Mapping"
-                                Command="{Binding AddColumnMappingCommand}"
-                                BackgroundColor="#2e7d32" TextColor="White" CornerRadius="6"
-                                VerticalOptions="End" />
-                    </Grid>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <Label Text="{Binding CompareFilePath, TargetNullValue='No compare file selected'}"
+                                   FontSize="12" TextColor="#666" VerticalOptions="Center" LineBreakMode="MiddleTruncation" />
+                            <Button Grid.Column="1" Text="Browse Compare File"
+                                    Command="{Binding BrowseCompareFileCommand}"
+                                    BackgroundColor="#1565c0" TextColor="White" CornerRadius="6" />
+                        </Grid>
 
-                    <!-- Mapped Columns List -->
-                    <CollectionView ItemsSource="{Binding ColumnMappings}" SelectionMode="None">
+                        <Label Text="{Binding StatusMessage}" FontSize="12" TextColor="#2e7d32" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Column Mapping (only visible in Column Mapping mode) -->
+                <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White" Padding="20">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Column Mapping (Reference Popup)" FontSize="18" FontAttributes="Bold" TextColor="#1a237e" />
+                        <Label Text="Map columns between master and compare files. Set one as Reference Column for matching."
+                               FontSize="12" TextColor="#666" />
+                        <BoxView HeightRequest="1" Color="#e0e0e0" />
+
+                        <Grid ColumnDefinitions="*,*,Auto,Auto" ColumnSpacing="12" RowDefinitions="Auto,Auto">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="Master Column" FontSize="12" TextColor="#666" />
+                                <Picker ItemsSource="{Binding MasterHeaders}" SelectedItem="{Binding SelectedMasterHeader}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="Compare Column" FontSize="12" TextColor="#666" />
+                                <Picker ItemsSource="{Binding CompareHeaders}" SelectedItem="{Binding SelectedCompareHeader}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="2" VerticalOptions="End">
+                                <HorizontalStackLayout Spacing="4">
+                                    <CheckBox IsChecked="{Binding IsReferenceColumn}" />
+                                    <Label Text="Reference Key" VerticalOptions="Center" FontSize="12" TextColor="#c62828" FontAttributes="Bold" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <Button Grid.Column="3" Text="Add Mapping"
+                                    Command="{Binding AddColumnMappingCommand}"
+                                    BackgroundColor="#2e7d32" TextColor="White" CornerRadius="6"
+                                    VerticalOptions="End" />
+                        </Grid>
+
+                        <!-- Mapped Columns List -->
+                        <CollectionView ItemsSource="{Binding ColumnMappings}" SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="x:Object">
+                                    <Grid ColumnDefinitions="*,*,Auto,Auto" Padding="8,4" ColumnSpacing="8">
+                                        <Label Grid.Column="0" Text="{Binding MasterColumn}" FontSize="12" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding CompareColumn}" FontSize="12" VerticalOptions="Center" />
+                                        <Label Grid.Column="2" Text="REF" FontSize="10" TextColor="#c62828"
+                                               FontAttributes="Bold" IsVisible="{Binding IsReferenceColumn}" VerticalOptions="Center" />
+                                        <Button Grid.Column="3" Text="X"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ExcelCompareViewModel}}, Path=RemoveColumnMappingCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#c62828" TextColor="White" FontSize="10"
+                                                HeightRequest="24" WidthRequest="30" CornerRadius="4" Padding="0" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <HorizontalStackLayout Spacing="12">
+                            <Button Text="Run Comparison"
+                                    Command="{Binding RunComparisonCommand}"
+                                    BackgroundColor="#e65100" TextColor="White" CornerRadius="6" FontAttributes="Bold" />
+                            <Button Text="Clear Mappings"
+                                    Command="{Binding ClearMappingsCommand}"
+                                    BackgroundColor="#757575" TextColor="White" CornerRadius="6" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Column Mapping Results Summary -->
+                <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White" Padding="20"
+                        IsVisible="{Binding HasResults}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Comparison Results" FontSize="18" FontAttributes="Bold" TextColor="#1a237e" />
+                        <BoxView HeightRequest="1" Color="#e0e0e0" />
+
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 6" BackgroundColor="#e8f5e9" Padding="16">
+                                <VerticalStackLayout HorizontalOptions="Center">
+                                    <Label Text="Matched" FontSize="12" TextColor="#2e7d32" HorizontalOptions="Center" />
+                                    <Label Text="{Binding TotalMatched}" FontSize="28" FontAttributes="Bold" TextColor="#2e7d32" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Column="1" StrokeShape="RoundRectangle 6" BackgroundColor="#fff3e0" Padding="16">
+                                <VerticalStackLayout HorizontalOptions="Center">
+                                    <Label Text="Mismatched" FontSize="12" TextColor="#e65100" HorizontalOptions="Center" />
+                                    <Label Text="{Binding TotalMismatched}" FontSize="28" FontAttributes="Bold" TextColor="#e65100" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Column="2" StrokeShape="RoundRectangle 6" BackgroundColor="#fce4ec" Padding="16">
+                                <VerticalStackLayout HorizontalOptions="Center">
+                                    <Label Text="Missing" FontSize="12" TextColor="#c62828" HorizontalOptions="Center" />
+                                    <Label Text="{Binding TotalMissing}" FontSize="28" FontAttributes="Bold" TextColor="#c62828" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+
+                        <Button Text="Export Results to Excel"
+                                Command="{Binding ExportResultsCommand}"
+                                BackgroundColor="#1b5e20" TextColor="White" CornerRadius="6"
+                                HorizontalOptions="Start" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Column Mapping Results Detail Table -->
+                <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White" Padding="0"
+                        IsVisible="{Binding HasResults}" HeightRequest="400">
+                    <CollectionView ItemsSource="{Binding CompareResults}" SelectionMode="None">
+                        <CollectionView.Header>
+                            <Grid ColumnDefinitions="60,80,*,*,*" Padding="12,8" BackgroundColor="#1a237e">
+                                <Label Grid.Column="0" Text="Row" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                                <Label Grid.Column="1" Text="Status" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                                <Label Grid.Column="2" Text="Ref Column" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                                <Label Grid.Column="3" Text="Ref Value" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                                <Label Grid.Column="4" Text="Compare Info" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                            </Grid>
+                        </CollectionView.Header>
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="x:Object">
-                                <Grid ColumnDefinitions="*,*,Auto,Auto" Padding="8,4" ColumnSpacing="8">
-                                    <Label Grid.Column="0" Text="{Binding MasterColumn}" FontSize="12" VerticalOptions="Center" />
-                                    <Label Grid.Column="1" Text="{Binding CompareColumn}" FontSize="12" VerticalOptions="Center" />
-                                    <Label Grid.Column="2" Text="REF" FontSize="10" TextColor="#c62828"
-                                           FontAttributes="Bold" IsVisible="{Binding IsReferenceColumn}" VerticalOptions="Center" />
-                                    <Button Grid.Column="3" Text="X"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ExcelCompareViewModel}}, Path=RemoveColumnMappingCommand}"
-                                            CommandParameter="{Binding .}"
-                                            BackgroundColor="#c62828" TextColor="White" FontSize="10"
-                                            HeightRequest="24" WidthRequest="30" CornerRadius="4" Padding="0" />
+                                <Grid ColumnDefinitions="60,80,*,*,*" Padding="12,4">
+                                    <Label Grid.Column="0" Text="{Binding RowIndex}" FontSize="11" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="{Binding Status}" FontSize="11" FontAttributes="Bold" VerticalOptions="Center" />
+                                    <Label Grid.Column="2" Text="{Binding ReferenceColumn}" FontSize="11" VerticalOptions="Center" />
+                                    <Label Grid.Column="3" Text="{Binding ReferenceValue}" FontSize="11" VerticalOptions="Center" />
+                                    <Label Grid.Column="4" Text="{Binding CompareValue}" FontSize="11" VerticalOptions="Center" LineBreakMode="TailTruncation" />
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
+                </Border>
 
-                    <HorizontalStackLayout Spacing="12">
-                        <Button Text="Run Comparison"
-                                Command="{Binding RunComparisonCommand}"
-                                BackgroundColor="#e65100" TextColor="White" CornerRadius="6" FontAttributes="Bold" />
-                        <Button Text="Clear Mappings"
-                                Command="{Binding ClearMappingsCommand}"
-                                BackgroundColor="#757575" TextColor="White" CornerRadius="6" />
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
+                <!-- Cell-by-Cell Results Summary -->
+                <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White" Padding="20"
+                        IsVisible="{Binding HasCellResults}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Cell-by-Cell Comparison Results" FontSize="18" FontAttributes="Bold" TextColor="#1a237e" />
+                        <Label Text="{Binding CellCompareElapsed, StringFormat='Performance: {0}'}" FontSize="12" TextColor="#666" />
+                        <BoxView HeightRequest="1" Color="#e0e0e0" />
 
-            <!-- Results Summary -->
-            <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White" Padding="20"
-                    IsVisible="{Binding HasResults}">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Comparison Results" FontSize="18" FontAttributes="Bold" TextColor="#1a237e" />
-                    <BoxView HeightRequest="1" Color="#e0e0e0" />
-
-                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
-                        <Border Grid.Column="0" StrokeShape="RoundRectangle 6" BackgroundColor="#e8f5e9" Padding="16">
-                            <VerticalStackLayout HorizontalOptions="Center">
-                                <Label Text="Matched" FontSize="12" TextColor="#2e7d32" HorizontalOptions="Center" />
-                                <Label Text="{Binding TotalMatched}" FontSize="28" FontAttributes="Bold" TextColor="#2e7d32" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-                        </Border>
-                        <Border Grid.Column="1" StrokeShape="RoundRectangle 6" BackgroundColor="#fff3e0" Padding="16">
-                            <VerticalStackLayout HorizontalOptions="Center">
-                                <Label Text="Mismatched" FontSize="12" TextColor="#e65100" HorizontalOptions="Center" />
-                                <Label Text="{Binding TotalMismatched}" FontSize="28" FontAttributes="Bold" TextColor="#e65100" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-                        </Border>
-                        <Border Grid.Column="2" StrokeShape="RoundRectangle 6" BackgroundColor="#fce4ec" Padding="16">
-                            <VerticalStackLayout HorizontalOptions="Center">
-                                <Label Text="Missing" FontSize="12" TextColor="#c62828" HorizontalOptions="Center" />
-                                <Label Text="{Binding TotalMissing}" FontSize="28" FontAttributes="Bold" TextColor="#c62828" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-                        </Border>
-                    </Grid>
-
-                    <Button Text="Export Results to Excel"
-                            Command="{Binding ExportResultsCommand}"
-                            BackgroundColor="#1b5e20" TextColor="White" CornerRadius="6"
-                            HorizontalOptions="Start" />
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Results Detail Table -->
-            <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White" Padding="0"
-                    IsVisible="{Binding HasResults}" HeightRequest="400">
-                <CollectionView ItemsSource="{Binding CompareResults}" SelectionMode="None">
-                    <CollectionView.Header>
-                        <Grid ColumnDefinitions="60,80,*,*,*" Padding="12,8" BackgroundColor="#1a237e">
-                            <Label Grid.Column="0" Text="Row" TextColor="White" FontAttributes="Bold" FontSize="12" />
-                            <Label Grid.Column="1" Text="Status" TextColor="White" FontAttributes="Bold" FontSize="12" />
-                            <Label Grid.Column="2" Text="Ref Column" TextColor="White" FontAttributes="Bold" FontSize="12" />
-                            <Label Grid.Column="3" Text="Ref Value" TextColor="White" FontAttributes="Bold" FontSize="12" />
-                            <Label Grid.Column="4" Text="Compare Info" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                        <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="12">
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 6" BackgroundColor="#e8f5e9" Padding="14">
+                                <VerticalStackLayout HorizontalOptions="Center">
+                                    <Label Text="Additions" FontSize="12" TextColor="#2e7d32" HorizontalOptions="Center" />
+                                    <Label Text="{Binding CellAdditions}" FontSize="26" FontAttributes="Bold" TextColor="#2e7d32" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Column="1" StrokeShape="RoundRectangle 6" BackgroundColor="#fce4ec" Padding="14">
+                                <VerticalStackLayout HorizontalOptions="Center">
+                                    <Label Text="Deletions" FontSize="12" TextColor="#c62828" HorizontalOptions="Center" />
+                                    <Label Text="{Binding CellDeletions}" FontSize="26" FontAttributes="Bold" TextColor="#c62828" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Column="2" StrokeShape="RoundRectangle 6" BackgroundColor="#fff3e0" Padding="14">
+                                <VerticalStackLayout HorizontalOptions="Center">
+                                    <Label Text="Changes" FontSize="12" TextColor="#e65100" HorizontalOptions="Center" />
+                                    <Label Text="{Binding CellValueChanges}" FontSize="26" FontAttributes="Bold" TextColor="#e65100" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Column="3" StrokeShape="RoundRectangle 6" BackgroundColor="#e3f2fd" Padding="14">
+                                <VerticalStackLayout HorizontalOptions="Center">
+                                    <Label Text="Matched" FontSize="12" TextColor="#1565c0" HorizontalOptions="Center" />
+                                    <Label Text="{Binding CellMatched}" FontSize="26" FontAttributes="Bold" TextColor="#1565c0" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
                         </Grid>
-                    </CollectionView.Header>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="x:Object">
-                            <Grid ColumnDefinitions="60,80,*,*,*" Padding="12,4">
-                                <Label Grid.Column="0" Text="{Binding RowIndex}" FontSize="11" VerticalOptions="Center" />
-                                <Label Grid.Column="1" Text="{Binding Status}" FontSize="11" FontAttributes="Bold" VerticalOptions="Center" />
-                                <Label Grid.Column="2" Text="{Binding ReferenceColumn}" FontSize="11" VerticalOptions="Center" />
-                                <Label Grid.Column="3" Text="{Binding ReferenceValue}" FontSize="11" VerticalOptions="Center" />
-                                <Label Grid.Column="4" Text="{Binding CompareValue}" FontSize="11" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+
+                        <Button Text="Export Cell Differences to Excel"
+                                Command="{Binding ExportResultsCommand}"
+                                BackgroundColor="#1b5e20" TextColor="White" CornerRadius="6"
+                                HorizontalOptions="Start" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Cell-by-Cell Differences Detail Table -->
+                <Border StrokeShape="RoundRectangle 8" Stroke="#e0e0e0" BackgroundColor="White" Padding="0"
+                        IsVisible="{Binding HasCellResults}" HeightRequest="400">
+                    <CollectionView ItemsSource="{Binding CellDifferences}" SelectionMode="None">
+                        <CollectionView.Header>
+                            <Grid ColumnDefinitions="100,80,100,*,*" Padding="12,8" BackgroundColor="#1a237e">
+                                <Label Grid.Column="0" Text="Sheet" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                                <Label Grid.Column="1" Text="Cell" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                                <Label Grid.Column="2" Text="Type" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                                <Label Grid.Column="3" Text="Old Value" TextColor="White" FontAttributes="Bold" FontSize="12" />
+                                <Label Grid.Column="4" Text="New Value" TextColor="White" FontAttributes="Bold" FontSize="12" />
                             </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Border>
+                        </CollectionView.Header>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="x:Object">
+                                <Grid ColumnDefinitions="100,80,100,*,*" Padding="12,4">
+                                    <Label Grid.Column="0" Text="{Binding SheetName}" FontSize="11" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="{Binding CellAddress}" FontSize="11" FontAttributes="Bold" VerticalOptions="Center" />
+                                    <Label Grid.Column="2" Text="{Binding ChangeType}" FontSize="11" FontAttributes="Bold"
+                                           TextColor="{Binding ChangeType, Converter={StaticResource ChangeTypeToColor}}"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="3" Text="{Binding OldValue}" FontSize="11" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="4" Text="{Binding NewValue}" FontSize="11" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Border>
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="#1a237e" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="#1a237e" />
 
-        </VerticalStackLayout>
-    </ScrollView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Mandatory Footer -->
+        <Border Grid.Row="1"
+                BackgroundColor="White"
+                Stroke="#e0e0e0"
+                Padding="8">
+            <Label Text="copyright @2026 Develop By Chetan"
+                   FontSize="12"
+                   TextColor="#666"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center" />
+        </Border>
+    </Grid>
 </ContentPage>

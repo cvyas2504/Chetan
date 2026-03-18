@@ -41,6 +41,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EmployeeMasterViewModel>();
         builder.Services.AddTransient<DutyMasterViewModel>();
         builder.Services.AddTransient<DutyRosterViewModel>();
+        builder.Services.AddTransient<DutyDashboardViewModel>();
         builder.Services.AddTransient<UserMasterViewModel>();
         builder.Services.AddTransient<ExcelCompareViewModel>();
 
@@ -50,6 +51,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EmployeeMasterPage>();
         builder.Services.AddTransient<DutyMasterPage>();
         builder.Services.AddTransient<DutyRosterPage>();
+        builder.Services.AddTransient<DutyDashboardPage>();
         builder.Services.AddTransient<UserMasterPage>();
         builder.Services.AddTransient<LoginHistoryPage>();
         builder.Services.AddTransient<ExcelComparePage>();

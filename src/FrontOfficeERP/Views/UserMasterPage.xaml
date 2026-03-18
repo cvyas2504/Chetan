@@ -7,7 +7,7 @@
              Title="User Master"
              BackgroundColor="#f0f2f5">
 
-    <Grid RowDefinitions="Auto,*" Padding="24" RowSpacing="16">
+    <Grid RowDefinitions="Auto,*,Auto" Padding="24,24,24,0" RowSpacing="16">
 
         <HorizontalStackLayout Grid.Row="0" Spacing="12">
             <Button Text="+ New User"
@@ -88,5 +88,17 @@
         </Grid>
 
         <ActivityIndicator Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="#1a237e" VerticalOptions="Center" HorizontalOptions="Center" />
+
+        <!-- Mandatory Footer -->
+        <Border Grid.Row="2"
+                BackgroundColor="White"
+                Stroke="#e0e0e0"
+                Padding="8">
+            <Label Text="copyright @2026 Develop By Chetan"
+                   FontSize="12"
+                   TextColor="#666"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center" />
+        </Border>
     </Grid>
 </ContentPage>

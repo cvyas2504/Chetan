@@ -7,7 +7,7 @@
              Title="Duty Roster"
              BackgroundColor="#f0f2f5">
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="24" RowSpacing="12">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="24,24,24,0" RowSpacing="12">
 
         <!-- Toolbar Row 1: Period Navigation -->
         <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8">
@@ -143,5 +143,17 @@
         </Grid>
 
         <ActivityIndicator Grid.RowSpan="3" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="#1a237e" VerticalOptions="Center" HorizontalOptions="Center" />
+
+        <!-- Mandatory Footer -->
+        <Border Grid.Row="3"
+                BackgroundColor="White"
+                Stroke="#e0e0e0"
+                Padding="8">
+            <Label Text="copyright @2026 Develop By Chetan"
+                   FontSize="12"
+                   TextColor="#666"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center" />
+        </Border>
     </Grid>
 </ContentPage>
