@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FrontOfficeERP.ViewModels"
+             xmlns:converters="clr-namespace:FrontOfficeERP.Converters"
+             x:Class="FrontOfficeERP.Views.DutyDashboardPage"
+             x:DataType="vm:DutyDashboardViewModel"
+             Title="Duty Dashboard"
+             BackgroundColor="#1a1a2e">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:ShiftTypeToGradientConverter x:Key="ShiftToGradient" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+            <!-- Glassmorphism Main Container -->
+            <Border StrokeShape="RoundRectangle 16"
+                    BackgroundColor="#33FFFFFF"
+                    Stroke="#44FFFFFF"
+                    StrokeThickness="1"
+                    Margin="16"
+                    Padding="20"
+                    Shadow="{Shadow Brush=#40000000, Offset='0,8', Radius=24}">
+
+                <VerticalStackLayout Spacing="20">
+
+                    <!-- Header -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout>
+                            <Label Text="Duty Management Dashboard"
+                                   FontSize="26"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
+                            <Label Text="{Binding CurrentPeriod}"
+                                   FontSize="14"
+                                   TextColor="#BBBBBB" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1"
+                                Text="Refresh"
+                                Command="{Binding RefreshCommand}"
+                                BackgroundColor="#44FFFFFF"
+                                TextColor="White"
+                                CornerRadius="8"
+                                FontSize="13"
+                                Padding="16,8" />
+                    </Grid>
+
+                    <!-- Summary Stat Cards Row -->
+                    <FlexLayout Direction="Row"
+                                Wrap="Wrap"
+                                JustifyContent="SpaceEvenly"
+                                AlignItems="Center">
+
+                        <!-- General Count -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                BackgroundColor="#331B5E20"
+                                Stroke="#441B5E20"
+                                Padding="16,12"
+                                Margin="4"
+                                MinimumWidthRequest="140">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <Label Text="General" FontSize="12" TextColor="#66BB6A" HorizontalOptions="Center" />
+                                <Label Text="{Binding TotalGeneral}" FontSize="28" FontAttributes="Bold" TextColor="#66BB6A" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Morning Count -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                BackgroundColor="#331565C0"
+                                Stroke="#441565C0"
+                                Padding="16,12"
+                                Margin="4"
+                                MinimumWidthRequest="140">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <Label Text="Morning" FontSize="12" TextColor="#42A5F5" HorizontalOptions="Center" />
+                                <Label Text="{Binding TotalMorning}" FontSize="28" FontAttributes="Bold" TextColor="#42A5F5" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Evening Count -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                BackgroundColor="#33E65100"
+                                Stroke="#44E65100"
+                                Padding="16,12"
+                                Margin="4"
+                                MinimumWidthRequest="140">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <Label Text="Evening" FontSize="12" TextColor="#FFB74D" HorizontalOptions="Center" />
+                                <Label Text="{Binding TotalEvening}" FontSize="28" FontAttributes="Bold" TextColor="#FFB74D" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Night Count -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                BackgroundColor="#334A148C"
+                                Stroke="#444A148C"
+                                Padding="16,12"
+                                Margin="4"
+                                MinimumWidthRequest="140">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <Label Text="Night" FontSize="12" TextColor="#CE93D8" HorizontalOptions="Center" />
+                                <Label Text="{Binding TotalNight}" FontSize="28" FontAttributes="Bold" TextColor="#CE93D8" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Total -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                BackgroundColor="#33FFFFFF"
+                                Stroke="#44FFFFFF"
+                                Padding="16,12"
+                                Margin="4"
+                                MinimumWidthRequest="140">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <Label Text="Total" FontSize="12" TextColor="White" HorizontalOptions="Center" />
+                                <Label Text="{Binding TotalScheduled}" FontSize="28" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </FlexLayout>
+
+                    <!-- Status -->
+                    <Label Text="{Binding StatusMessage}" FontSize="12" TextColor="#AAAAAA" />
+
+                    <!-- Duty Shift Cards - CollectionView with FlexLayout -->
+                    <CollectionView ItemsSource="{Binding DutyShiftCards}"
+                                    SelectionMode="None"
+                                    x:Name="ShiftCardsCollection">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:DutyShiftCard">
+                                <!-- 3D Style Card with Gradient Background -->
+                                <Border x:Name="ShiftCard"
+                                        StrokeShape="RoundRectangle 14"
+                                        Background="{Binding ShiftType, Converter={StaticResource ShiftToGradient}}"
+                                        Stroke="#55FFFFFF"
+                                        StrokeThickness="1"
+                                        Padding="18"
+                                        Margin="4,0"
+                                        Shadow="{Shadow Brush=#50000000, Offset='2,4', Radius=12}">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCardTapped" />
+                                        <PointerGestureRecognizer PointerEntered="OnCardPointerEntered"
+                                                                  PointerExited="OnCardPointerExited" />
+                                    </Border.GestureRecognizers>
+
+                                    <FlexLayout Direction="Row"
+                                                Wrap="Wrap"
+                                                JustifyContent="SpaceBetween"
+                                                AlignItems="Center">
+
+                                        <!-- Shift Icon -->
+                                        <Label Text="{Binding ShiftIcon}"
+                                               FontSize="32"
+                                               VerticalOptions="Center"
+                                               Margin="0,0,12,0" />
+
+                                        <!-- Main Info -->
+                                        <VerticalStackLayout Spacing="2"
+                                                             FlexLayout.Grow="1"
+                                                             MinimumWidthRequest="200">
+                                            <Label Text="{Binding EmployeeName}"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   TextColor="White" />
+                                            <Label FontSize="12" TextColor="#DDDDDD">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding DutyCode}" />
+                                                        <Span Text=" - " />
+                                                        <Span Text="{Binding DutyName}" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </VerticalStackLayout>
+
+                                        <!-- Date and Shift -->
+                                        <VerticalStackLayout Spacing="2"
+                                                             HorizontalOptions="End"
+                                                             MinimumWidthRequest="120">
+                                            <Label Text="{Binding FormattedDate}"
+                                                   FontSize="13"
+                                                   FontAttributes="Bold"
+                                                   TextColor="White"
+                                                   HorizontalTextAlignment="End" />
+                                            <Border StrokeShape="RoundRectangle 8"
+                                                    BackgroundColor="#33FFFFFF"
+                                                    Padding="8,2"
+                                                    HorizontalOptions="End">
+                                                <Label Text="{Binding ShiftType}"
+                                                       FontSize="11"
+                                                       TextColor="White"
+                                                       FontAttributes="Bold" />
+                                            </Border>
+                                        </VerticalStackLayout>
+
+                                        <!-- Status Badge -->
+                                        <Border StrokeShape="RoundRectangle 8"
+                                                BackgroundColor="#44FFFFFF"
+                                                Padding="10,4"
+                                                Margin="8,0,0,0">
+                                            <Label Text="{Binding Status}"
+                                                   FontSize="11"
+                                                   TextColor="White"
+                                                   FontAttributes="Bold" />
+                                        </Border>
+                                    </FlexLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                        <CollectionView.EmptyView>
+                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="40">
+                                <Label Text="No duty shifts scheduled for this week."
+                                       FontSize="14" TextColor="#888" HorizontalOptions="Center" />
+                                <Label Text="Add shifts from the Duty Roster page."
+                                       FontSize="12" TextColor="#666" HorizontalOptions="Center" Margin="0,4,0,0" />
+                            </VerticalStackLayout>
+                        </CollectionView.EmptyView>
+                    </CollectionView>
+
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="White" />
+
+                </VerticalStackLayout>
+            </Border>
+        </ScrollView>
+
+        <!-- Mandatory Footer -->
+        <Border Grid.Row="1"
+                BackgroundColor="#22FFFFFF"
+                Padding="8">
+            <Label Text="copyright @2026 Develop By Chetan"
+                   FontSize="12"
+                   TextColor="#AAAAAA"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center" />
+        </Border>
+    </Grid>
+</ContentPage>

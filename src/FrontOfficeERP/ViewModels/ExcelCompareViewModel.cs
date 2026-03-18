@@ -68,6 +68,36 @@ public partial class ExcelCompareViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<string> _compareHeaders = new();
 
+    // Cell-by-cell comparison properties
+    [ObservableProperty]
+    private WorkbookCompareResult? _workbookResult;
+
+    [ObservableProperty]
+    private ObservableCollection<CellDifference> _cellDifferences = new();
+
+    [ObservableProperty]
+    private bool _hasCellResults;
+
+    [ObservableProperty]
+    private int _cellAdditions;
+
+    [ObservableProperty]
+    private int _cellDeletions;
+
+    [ObservableProperty]
+    private int _cellValueChanges;
+
+    [ObservableProperty]
+    private int _cellMatched;
+
+    [ObservableProperty]
+    private string _cellCompareElapsed = string.Empty;
+
+    [ObservableProperty]
+    private string _selectedCompareMode = "Column Mapping";
+
+    public List<string> CompareModes { get; } = new() { "Column Mapping", "Cell-by-Cell" };
+
     public ExcelCompareViewModel(ExcelCompareService compareService, ExportService exportService)
     {
         _compareService = compareService;
@@ -208,6 +238,13 @@ public partial class ExcelCompareViewModel : ObservableObject
     [RelayCommand]
     private async Task RunComparisonAsync()
     {
+        if (SelectedCompareMode == "Cell-by-Cell")
+        {
+            await RunCellByCellComparisonAsync();
+            return;
+        }
+
+        // Column Mapping mode
         if (MasterFileData is null || CompareFileData is null)
         {
             await Shell.Current.DisplayAlert("Validation", "Please load both master and compare files.", "OK");
@@ -233,8 +270,46 @@ public partial class ExcelCompareViewModel : ObservableObject
             TotalMismatched = merged.TotalMismatched;
             TotalMissing = merged.TotalMissing;
             HasResults = true;
+            HasCellResults = false;
 
             StatusMessage = $"Comparison complete: {TotalMatched} matched, {TotalMismatched} mismatched, {TotalMissing} missing";
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task RunCellByCellComparisonAsync()
+    {
+        if (string.IsNullOrEmpty(MasterFilePath) || string.IsNullOrEmpty(CompareFilePath))
+        {
+            await Shell.Current.DisplayAlert("Validation", "Please select both master and compare files.", "OK");
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var result = await _compareService.CompareWorkbooksCellByCellAsync(MasterFilePath, CompareFilePath);
+
+            WorkbookResult = result;
+            CellDifferences = new ObservableCollection<CellDifference>(result.Differences);
+            CellAdditions = result.Additions;
+            CellDeletions = result.Deletions;
+            CellValueChanges = result.ValueChanges;
+            CellMatched = result.MatchedCells;
+            CellCompareElapsed = $"{result.ElapsedTime.TotalMilliseconds:F0}ms ({result.TotalCellsCompared:N0} cells)";
+            HasCellResults = true;
+            HasResults = false;
+
+            StatusMessage = $"Cell comparison done in {result.ElapsedTime.TotalMilliseconds:F0}ms: " +
+                            $"{result.Additions} additions, {result.Deletions} deletions, " +
+                            $"{result.ValueChanges} changes, {result.MatchedCells} matched";
         }
         catch (Exception ex)
         {
@@ -249,6 +324,12 @@ public partial class ExcelCompareViewModel : ObservableObject
     [RelayCommand]
     private async Task ExportResultsAsync()
     {
+        if (HasCellResults && WorkbookResult is not null)
+        {
+            await ExportCellResultsAsync();
+            return;
+        }
+
         if (MergedData is null || CompareResults.Count == 0)
         {
             await Shell.Current.DisplayAlert("Info", "No results to export.", "OK");
@@ -260,6 +341,26 @@ public partial class ExcelCompareViewModel : ObservableObject
         {
             var filePath = await _exportService.ExportCompareResultToExcelAsync(
                 MergedData, CompareResults.ToList(), "ExcelCompare");
+            PrintService.OpenFile(filePath);
+            await Shell.Current.DisplayAlert("Success", $"Exported to:\n{filePath}", "OK");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task ExportCellResultsAsync()
+    {
+        IsBusy = true;
+        try
+        {
+            var filePath = await _exportService.ExportCellDifferencesToExcelAsync(
+                WorkbookResult!, "CellCompare");
             PrintService.OpenFile(filePath);
             await Shell.Current.DisplayAlert("Success", $"Exported to:\n{filePath}", "OK");
         }

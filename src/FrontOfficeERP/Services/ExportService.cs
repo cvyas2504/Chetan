@@ -232,6 +232,77 @@ public class ExportService
         });
     }
 
+    public async Task<string> ExportCellDifferencesToExcelAsync(
+        WorkbookCompareResult result,
+        string fileName)
+    {
+        return await Task.Run(() =>
+        {
+            var filePath = GetExportPath(fileName, "xlsx");
+
+            using var workbook = new XLWorkbook();
+
+            // Differences sheet
+            var diffSheet = workbook.Worksheets.Add("Cell Differences");
+            var headers = new[] { "Sheet", "Cell", "Change Type", "Old Value", "New Value", "Summary" };
+            for (int i = 0; i < headers.Length; i++)
+            {
+                var cell = diffSheet.Cell(1, i + 1);
+                cell.Value = headers[i];
+                cell.Style.Font.Bold = true;
+                cell.Style.Fill.BackgroundColor = XLColor.DarkBlue;
+                cell.Style.Font.FontColor = XLColor.White;
+            }
+
+            int row = 2;
+            foreach (var diff in result.Differences)
+            {
+                diffSheet.Cell(row, 1).Value = diff.SheetName;
+                diffSheet.Cell(row, 2).Value = diff.CellAddress;
+                diffSheet.Cell(row, 3).Value = diff.ChangeType.ToString();
+                diffSheet.Cell(row, 4).Value = diff.OldValue;
+                diffSheet.Cell(row, 5).Value = diff.NewValue;
+                diffSheet.Cell(row, 6).Value = diff.Summary;
+
+                var bgColor = diff.ChangeType switch
+                {
+                    ChangeType.Addition => XLColor.LightGreen,
+                    ChangeType.Deletion => XLColor.LightSalmon,
+                    ChangeType.ValueChange => XLColor.LightYellow,
+                    _ => XLColor.White
+                };
+
+                for (int c = 1; c <= 6; c++)
+                    diffSheet.Cell(row, c).Style.Fill.BackgroundColor = bgColor;
+
+                row++;
+            }
+            diffSheet.Columns().AdjustToContents();
+
+            // Summary sheet
+            var summarySheet = workbook.Worksheets.Add("Summary");
+            summarySheet.Cell(1, 1).Value = "Cell-by-Cell Comparison Summary";
+            summarySheet.Cell(1, 1).Style.Font.Bold = true;
+            summarySheet.Cell(1, 1).Style.Font.FontSize = 14;
+            summarySheet.Cell(3, 1).Value = "Total Cells Compared:";
+            summarySheet.Cell(3, 2).Value = result.TotalCellsCompared;
+            summarySheet.Cell(4, 1).Value = "Matched Cells:";
+            summarySheet.Cell(4, 2).Value = result.MatchedCells;
+            summarySheet.Cell(5, 1).Value = "Additions:";
+            summarySheet.Cell(5, 2).Value = result.Additions;
+            summarySheet.Cell(6, 1).Value = "Deletions:";
+            summarySheet.Cell(6, 2).Value = result.Deletions;
+            summarySheet.Cell(7, 1).Value = "Value Changes:";
+            summarySheet.Cell(7, 2).Value = result.ValueChanges;
+            summarySheet.Cell(8, 1).Value = "Elapsed Time:";
+            summarySheet.Cell(8, 2).Value = $"{result.ElapsedTime.TotalMilliseconds:F0}ms";
+            summarySheet.Columns().AdjustToContents();
+
+            workbook.SaveAs(filePath);
+            return filePath;
+        });
+    }
+
     private static string GetExportPath(string fileName, string extension)
     {
         var exportDir = Path.Combine(

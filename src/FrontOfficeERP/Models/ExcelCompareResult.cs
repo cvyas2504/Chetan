@@ -1,5 +1,16 @@
 namespace FrontOfficeERP.Models;
 
+/// <summary>
+/// Represents the type of change detected during cell-by-cell comparison.
+/// </summary>
+public enum ChangeType
+{
+    None,
+    Addition,
+    Deletion,
+    ValueChange
+}
+
 public class ExcelCompareResult
 {
     public int RowIndex { get; set; }
@@ -9,6 +20,47 @@ public class ExcelCompareResult
     public string CompareValue { get; set; } = string.Empty;
     public Dictionary<string, string> MasterRowData { get; set; } = new();
     public Dictionary<string, string> CompareRowData { get; set; } = new();
+}
+
+/// <summary>
+/// Represents a single cell-level difference found during workbook comparison.
+/// </summary>
+public class CellDifference
+{
+    public string SheetName { get; set; } = string.Empty;
+    public int Row { get; set; }
+    public int Column { get; set; }
+    public string CellAddress { get; set; } = string.Empty;
+    public ChangeType ChangeType { get; set; }
+    public string OldValue { get; set; } = string.Empty;
+    public string NewValue { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Human-readable summary of the change.
+    /// </summary>
+    public string Summary => ChangeType switch
+    {
+        ChangeType.Addition => $"Added: '{NewValue}'",
+        ChangeType.Deletion => $"Removed: '{OldValue}'",
+        ChangeType.ValueChange => $"Changed: '{OldValue}' -> '{NewValue}'",
+        _ => "No change"
+    };
+}
+
+/// <summary>
+/// Aggregated results from a cell-by-cell workbook comparison.
+/// </summary>
+public class WorkbookCompareResult
+{
+    public List<CellDifference> Differences { get; set; } = new();
+    public int TotalCellsCompared { get; set; }
+    public int Additions { get; set; }
+    public int Deletions { get; set; }
+    public int ValueChanges { get; set; }
+    public int MatchedCells { get; set; }
+    public TimeSpan ElapsedTime { get; set; }
+
+    public bool HasDifferences => Differences.Count > 0;
 }
 
 public class ColumnMapping

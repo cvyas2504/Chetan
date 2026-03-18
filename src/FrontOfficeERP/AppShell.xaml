@@ -18,6 +18,9 @@
         <ShellContent Route="dashboard"
                       Title="Dashboard"
                       ContentTemplate="{DataTemplate views:DashboardPage}" />
+        <ShellContent Route="dutydashboard"
+                      Title="Duty Dashboard"
+                      ContentTemplate="{DataTemplate views:DutyDashboardPage}" />
         <ShellContent Route="dutyroster"
                       Title="Duty Roster"
                       ContentTemplate="{DataTemplate views:DutyRosterPage}" />
